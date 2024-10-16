@@ -1,15 +1,15 @@
 from datetime import datetime, timedelta,timezone
-from fastapi import Depends, HTTPException,status
+from fastapi import HTTPException,status
 import jwt
 from jwt.exceptions import PyJWTError
 from passlib.context import CryptContext
-from fastapi.security import OAuth2PasswordBearer
 from sqlmodel import Session,select
-from models import AuthUser, AuthUserBase, AuthUserPublic
-from schemas import Token
-SECRET_KEY = "09d25e094faa6ca2556c818166b7a9563b93f7099f6f0f4caa6cf63b88e8d3e7"
-ALGORITHM = "HS256"
+from models import AuthUser, AuthUserBase
+from settings import SECRET_KEY,ALGORITHM
+
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
+
+
 async def get_password_hash(password:str):
     return pwd_context.hash(password)
 

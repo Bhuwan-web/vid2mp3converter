@@ -5,7 +5,8 @@ import logging
 
 load_dotenv()
 DATABASE_URI= os.environ.get("DATABASE_URI")
-
+SECRET_KEY = os.environ.get("SECRET_KEY")
+ALGORITHM = os.environ.get("ALGORITHM")
 
 # Configure the basic logger
 logging.basicConfig(
