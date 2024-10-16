@@ -1,20 +1,15 @@
-# todo: connect db
-# todo: create user
-# todo: login user
-# todo: logout user
-# todo: get tooken for user
-# todo: verify user
-# todo: get users
-
 from contextlib import asynccontextmanager
 from typing import Annotated
 from fastapi import Depends, FastAPI
-from sqlmodel import SQLModel, Session, create_engine,select
-
-from models import AuthUser, AuthUserBase
+from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
+from sqlmodel import SQLModel, Session, create_engine
+from schemas import Token
+from utils import get_current_user, login_user
+from models import AuthUser, AuthUserBase, AuthUserPublic
 from settings import DATABASE_URI,logger
 
 engine=create_engine(DATABASE_URI)
+oauth2_scheme = OAuth2PasswordBearer(tokenUrl="login")
 
 def create_db_and_tables():
     SQLModel.metadata.create_all(engine)
@@ -51,17 +46,13 @@ async def create_user(user:AuthUserBase,session:SessionDep):
     session.refresh(user)
     return user
 
-@app.post("/login")
-async def login(user:AuthUserBase,session:SessionDep):
-    username, password = user.username, user.password
-    user:AuthUser = session.exec(
-        select(AuthUser).where(AuthUser.username==username)
-    ).first()
-    if user and user.password==password:
-        return {"message":"login success"}
-    return {"message":"login failed"}
+@app.post("/login",response_model=Token)
+async def login(user:Annotated[OAuth2PasswordRequestForm,Depends()],session:SessionDep):
+    return await login_user(user,session)
 
-if __name__=="__main__":
-    import uvicorn
-    uvicorn.run(app, host="0.0.0.0", port=8080)
+@app.post("/verify-user",response_model=AuthUserPublic)
+async def verify_user(token:Annotated[str,Depends(oauth2_scheme)],session:SessionDep):
+    logger.info(token)
+    return await get_current_user(session,token)
+
 

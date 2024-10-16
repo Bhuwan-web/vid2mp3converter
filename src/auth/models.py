@@ -6,6 +6,10 @@ class AuthUserBase(SQLModel):
 class AuthUser(AuthUserBase, table=True):
     id: int = Field(default=None, primary_key=True)
 
+class AuthUserPublic(SQLModel):
+    id: int
+    username: str
+
 
 
 

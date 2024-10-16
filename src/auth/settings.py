@@ -1,4 +1,4 @@
-import os,dotenv
+import os
 
 from dotenv import load_dotenv
 import logging
