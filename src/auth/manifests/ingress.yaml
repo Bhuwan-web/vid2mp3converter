@@ -1,18 +1,19 @@
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
-  name: api-gateway
+  name: auth
   labels:
-    name: api-gateway
+    name: auth
 spec:
   rules:
-  - host: gateway.mp3-converter.com
+  - host: auth.mp3-converter.com
     http:
       paths:
       - pathType: Prefix
         path: "/"
         backend:
           service:
-            name: api-gateway
+            name: auth
             port: 
-              number: 8000
+              number: 8080
+
